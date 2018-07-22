@@ -1,0 +1,17 @@
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      Settings
+    </mat-panel-title>
+    <mat-panel-description>
+      <div>Server: {{getServer()}} </div><div style="margin-left: 20px;">ProcessInstanceId: {{getProcessInstanceId()}}</div>
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+    <mat-form-field>
+      <input [ngModel]="getServer()" (ngModelChange)="setServer($event)" matInput placeholder="Server">
+    </mat-form-field>
+  <mat-form-field style="margin-left: 20px;">
+    <input [ngModel]="getProcessInstanceId()" (ngModelChange)="setProcessInstanceId($event)" matInput placeholder="ProcessInstanceId">
+  </mat-form-field>
+  <button (click)="loadModel()" style="margin-left: 20px;" mat-raised-button color="primary">load model</button>
+</mat-expansion-panel>
