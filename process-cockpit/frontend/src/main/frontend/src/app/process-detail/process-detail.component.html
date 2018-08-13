@@ -1,0 +1,5 @@
+<div style="margin-top:5px;"> <button mat-raised-button color="primary" (click)="showHeatmap()">
+  <mat-icon>map</mat-icon>Heatmap
+</button></div>
+<process-viewer (elementSelected)="elementSelected($event)" [tokens]="tokens" [xml]="xml" *ngIf="xml != null && tokens != null" [heatmap] = "heatmap"></process-viewer>
+<process-instance-list [id]="id" [searchRequest]="searchRequest" ></process-instance-list>

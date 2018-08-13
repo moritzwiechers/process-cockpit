@@ -1,0 +1,32 @@
+<div>
+<mat-form-field>
+  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+</mat-form-field>
+  <button mat-raised-button color="primary" (click)="retryAll()">
+    <mat-icon>refresh</mat-icon>Alle erneut versuchen
+  </button>
+<div>
+
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+  <!-- Position Column -->
+  <ng-container matColumnDef="key">
+    <th mat-header-cell *matHeaderCellDef> Name </th>
+    <td mat-cell *matCellDef="let element"> <a [routerLink]="['/processDetail',element.id]" routerLinkActive="active"> {{element.key}} </a></td>
+  </ng-container>
+
+  <!-- Weight Column -->
+  <ng-container matColumnDef="instanceCount">
+    <th mat-header-cell *matHeaderCellDef> Anzahl Instanzen </th>
+    <td mat-cell *matCellDef="let element"> {{element.instanceCount}} </td>
+  </ng-container>
+
+  <!-- Symbol Column -->
+  <ng-container matColumnDef="incidentCount">
+    <th mat-header-cell *matHeaderCellDef> Anzahl Fehler </th>
+    <td mat-cell *matCellDef="let element"> {{element.incidentCount}} </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
