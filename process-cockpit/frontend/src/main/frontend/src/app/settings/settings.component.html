@@ -1,0 +1,11 @@
+<mat-card>
+  <mat-card-title>
+    {{ 'menu.settings' | translate }}
+  </mat-card-title>
+  <mat-card-content>
+    <mat-form-field>
+      <input [ngModel]="getServer()" (ngModelChange)="setServer($event)" matInput placeholder="Server">
+    </mat-form-field>
+    <mat-checkbox class="example-margin" [ngModel]="getCORS()" (ngModelChange)="setCORS($event)">CORS Hook</mat-checkbox>
+  </mat-card-content>
+</mat-card>

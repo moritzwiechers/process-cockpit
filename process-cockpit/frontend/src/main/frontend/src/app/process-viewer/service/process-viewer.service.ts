@@ -1,17 +1,15 @@
 import { Injectable } from '@angular/core';
-import {SettingsServiceService} from "./settings-service.service";
+import {SettingsService} from "../../settings/service/settings.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class ProcessServiceService {
+export class ProcessViewerService {
 
-  constructor(private SettingsService: SettingsServiceService) {
+  constructor(private SettingsService: SettingsService) {
   }
 
   loadModel():string{
-    let server = this.SettingsService.getServer();
-    let processInstanceId =  this.SettingsService.getProcessInstanceId();
     return '<?xml version="1.0" encoding="UTF-8"?>\n' +
       '<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_0j80umd" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.16.1">\n' +
       '  <bpmn:process id="Process1" isExecutable="true">\n' +

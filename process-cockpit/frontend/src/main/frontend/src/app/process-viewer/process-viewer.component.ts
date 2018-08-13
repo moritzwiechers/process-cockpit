@@ -1,154 +1,140 @@
 import { Component, OnInit } from '@angular/core';
 import {Viewer} from "../bpmn-js/bpmn-js"
+import {Input} from '@angular/core';
+import Utils from "../util/utils";
+import {OnChanges} from '@angular/core';
+import {SimpleChanges} from '@angular/core';
+import {SimpleChange} from '@angular/core';
+import * as h337 from 'heatmap.js';
+import {Output} from '@angular/core';
+import {EventEmitter} from '@angular/core';
+
 @Component({
   selector: 'process-viewer',
   templateUrl: './process-viewer.component.html',
   styleUrls: ['./process-viewer.component.css']
 })
-export class ProcessViewerComponent implements OnInit {
-  viewer;
+export class ProcessViewerComponent implements OnInit, OnChanges {
 
+  @Output() elementSelected = new EventEmitter<String>();
+
+  @Input() xml: string;
+  @Input() tokens: any[];
+  @Input() heatmap: any[];
+  viewer : any;
+  overlays : any;
+  heatmapInstance: any;
   constructor() { }
+
+  ngOnChanges(changes: SimpleChanges) {
+    const heatmap: SimpleChange = changes.heatmap;
+    console.log('prev value: ', heatmap.previousValue);
+    console.log('got name: ', heatmap.currentValue);
+    this.heatmap = heatmap.currentValue;
+    if(this.viewer!=null){
+      if(this.heatmap == null){
+        this.removeOverlays();
+        this.removeHeatmap();
+        this.showTokens();
+      }else{
+        this.removeOverlays();
+        this.showHeatmap();
+      }
+    }
+  }
 
   ngOnInit() {
     this.viewer = new Viewer({
       container: '#canvas',
       width: '100%',
-      height: '600px'
+      height: '230px'
     });
-    var xml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-      '<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_0j80umd" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.16.1">\n' +
-      '  <bpmn:process id="Process1" isExecutable="true">\n' +
-      '    <bpmn:startEvent id="StartEvent_1">\n' +
-      '      <bpmn:outgoing>SequenceFlow_11</bpmn:outgoing>\n' +
-      '    </bpmn:startEvent>\n' +
-      '    <bpmn:endEvent id="EndEvent_1">\n' +
-      '      <bpmn:incoming>SequenceFlow_15</bpmn:incoming>\n' +
-      '    </bpmn:endEvent>\n' +
-      '    <bpmn:task id="Task_1" camunda:asyncBefore="true">\n' +
-      '      <bpmn:incoming>SequenceFlow_11</bpmn:incoming>\n' +
-      '      <bpmn:outgoing>SequenceFlow_12</bpmn:outgoing>\n' +
-      '    </bpmn:task>\n' +
-      '    <bpmn:sequenceFlow id="SequenceFlow_11" sourceRef="StartEvent_1" targetRef="Task_1" />\n' +
-      '    <bpmn:userTask id="UserTask_1">\n' +
-      '      <bpmn:incoming>SequenceFlow_12</bpmn:incoming>\n' +
-      '      <bpmn:outgoing>SequenceFlow_13</bpmn:outgoing>\n' +
-      '    </bpmn:userTask>\n' +
-      '    <bpmn:sequenceFlow id="SequenceFlow_12" sourceRef="Task_1" targetRef="UserTask_1" />\n' +
-      '    <bpmn:exclusiveGateway id="ExclusiveGateway1">\n' +
-      '      <bpmn:incoming>SequenceFlow_13</bpmn:incoming>\n' +
-      '      <bpmn:incoming>SequenceFlow_23</bpmn:incoming>\n' +
-      '      <bpmn:outgoing>SequenceFlow_14</bpmn:outgoing>\n' +
-      '    </bpmn:exclusiveGateway>\n' +
-      '    <bpmn:sequenceFlow id="SequenceFlow_13" sourceRef="UserTask_1" targetRef="ExclusiveGateway1" />\n' +
-      '    <bpmn:startEvent id="StartEvent_2">\n' +
-      '      <bpmn:outgoing>SequenceFlow_21</bpmn:outgoing>\n' +
-      '      <bpmn:messageEventDefinition messageRef="Message_0vpo2k9" />\n' +
-      '    </bpmn:startEvent>\n' +
-      '    <bpmn:task id="Task_2" camunda:asyncBefore="true">\n' +
-      '      <bpmn:incoming>SequenceFlow_21</bpmn:incoming>\n' +
-      '      <bpmn:outgoing>SequenceFlow_22</bpmn:outgoing>\n' +
-      '    </bpmn:task>\n' +
-      '    <bpmn:userTask id="UserTask_2">\n' +
-      '      <bpmn:incoming>SequenceFlow_22</bpmn:incoming>\n' +
-      '      <bpmn:outgoing>SequenceFlow_23</bpmn:outgoing>\n' +
-      '    </bpmn:userTask>\n' +
-      '    <bpmn:sequenceFlow id="SequenceFlow_21" sourceRef="StartEvent_2" targetRef="Task_2" />\n' +
-      '    <bpmn:sequenceFlow id="SequenceFlow_22" sourceRef="Task_2" targetRef="UserTask_2" />\n' +
-      '    <bpmn:sequenceFlow id="SequenceFlow_23" sourceRef="UserTask_2" targetRef="ExclusiveGateway1" />\n' +
-      '    <bpmn:sequenceFlow id="SequenceFlow_14" sourceRef="ExclusiveGateway1" targetRef="Task_3" />\n' +
-      '    <bpmn:task id="Task_3" camunda:asyncBefore="true">\n' +
-      '      <bpmn:incoming>SequenceFlow_14</bpmn:incoming>\n' +
-      '      <bpmn:outgoing>SequenceFlow_15</bpmn:outgoing>\n' +
-      '    </bpmn:task>\n' +
-      '    <bpmn:sequenceFlow id="SequenceFlow_15" sourceRef="Task_3" targetRef="EndEvent_1" />\n' +
-      '  </bpmn:process>\n' +
-      '  <bpmn:message id="Message_0vpo2k9" name="Message_0fkhdhm" />\n' +
-      '  <bpmndi:BPMNDiagram id="BPMNDiagram_1">\n' +
-      '    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process1">\n' +
-      '      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">\n' +
-      '        <dc:Bounds x="173" y="158" width="36" height="36" />\n' +
-      '      </bpmndi:BPMNShape>\n' +
-      '      <bpmndi:BPMNShape id="EndEvent_06inok9_di" bpmnElement="EndEvent_1">\n' +
-      '        <dc:Bounds x="1052" y="66" width="36" height="36" />\n' +
-      '      </bpmndi:BPMNShape>\n' +
-      '      <bpmndi:BPMNShape id="Task_05yadyc_di" bpmnElement="Task_1">\n' +
-      '        <dc:Bounds x="385" y="136" width="100" height="80" />\n' +
-      '      </bpmndi:BPMNShape>\n' +
-      '      <bpmndi:BPMNEdge id="SequenceFlow_0j8ogsa_di" bpmnElement="SequenceFlow_11">\n' +
-      '        <di:waypoint x="209" y="176" />\n' +
-      '        <di:waypoint x="385" y="176" />\n' +
-      '      </bpmndi:BPMNEdge>\n' +
-      '      <bpmndi:BPMNShape id="UserTask_1117g40_di" bpmnElement="UserTask_1">\n' +
-      '        <dc:Bounds x="533" y="136" width="100" height="80" />\n' +
-      '      </bpmndi:BPMNShape>\n' +
-      '      <bpmndi:BPMNEdge id="SequenceFlow_1kjnln9_di" bpmnElement="SequenceFlow_12">\n' +
-      '        <di:waypoint x="485" y="176" />\n' +
-      '        <di:waypoint x="533" y="176" />\n' +
-      '      </bpmndi:BPMNEdge>\n' +
-      '      <bpmndi:BPMNShape id="ExclusiveGateway_1hhw0n0_di" bpmnElement="ExclusiveGateway1" isMarkerVisible="true">\n' +
-      '        <dc:Bounds x="803" y="59" width="50" height="50" />\n' +
-      '      </bpmndi:BPMNShape>\n' +
-      '      <bpmndi:BPMNEdge id="SequenceFlow_1pljqeh_di" bpmnElement="SequenceFlow_13">\n' +
-      '        <di:waypoint x="633" y="176" />\n' +
-      '        <di:waypoint x="828" y="176" />\n' +
-      '        <di:waypoint x="828" y="109" />\n' +
-      '      </bpmndi:BPMNEdge>\n' +
-      '      <bpmndi:BPMNShape id="StartEvent_1homyya_di" bpmnElement="StartEvent_2">\n' +
-      '        <dc:Bounds x="173" y="-17" width="36" height="36" />\n' +
-      '      </bpmndi:BPMNShape>\n' +
-      '      <bpmndi:BPMNShape id="Task_1fof8qd_di" bpmnElement="Task_2">\n' +
-      '        <dc:Bounds x="385" y="-39" width="100" height="80" />\n' +
-      '      </bpmndi:BPMNShape>\n' +
-      '      <bpmndi:BPMNShape id="UserTask_05ed29m_di" bpmnElement="UserTask_2">\n' +
-      '        <dc:Bounds x="533" y="-39" width="100" height="80" />\n' +
-      '      </bpmndi:BPMNShape>\n' +
-      '      <bpmndi:BPMNEdge id="SequenceFlow_1fl7xnd_di" bpmnElement="SequenceFlow_21">\n' +
-      '        <di:waypoint x="209" y="1" />\n' +
-      '        <di:waypoint x="385" y="1" />\n' +
-      '      </bpmndi:BPMNEdge>\n' +
-      '      <bpmndi:BPMNEdge id="SequenceFlow_0ihkvgt_di" bpmnElement="SequenceFlow_22">\n' +
-      '        <di:waypoint x="485" y="1" />\n' +
-      '        <di:waypoint x="533" y="1" />\n' +
-      '      </bpmndi:BPMNEdge>\n' +
-      '      <bpmndi:BPMNEdge id="SequenceFlow_0lhxejp_di" bpmnElement="SequenceFlow_23">\n' +
-      '        <di:waypoint x="633" y="1" />\n' +
-      '        <di:waypoint x="828" y="1" />\n' +
-      '        <di:waypoint x="828" y="59" />\n' +
-      '      </bpmndi:BPMNEdge>\n' +
-      '      <bpmndi:BPMNEdge id="SequenceFlow_1n3yzmj_di" bpmnElement="SequenceFlow_14">\n' +
-      '        <di:waypoint x="853" y="84" />\n' +
-      '        <di:waypoint x="884" y="84" />\n' +
-      '      </bpmndi:BPMNEdge>\n' +
-      '      <bpmndi:BPMNShape id="Task_1nyf60r_di" bpmnElement="Task_3">\n' +
-      '        <dc:Bounds x="884" y="44" width="100" height="80" />\n' +
-      '      </bpmndi:BPMNShape>\n' +
-      '      <bpmndi:BPMNEdge id="SequenceFlow_1d8wjpm_di" bpmnElement="SequenceFlow_15">\n' +
-      '        <di:waypoint x="984" y="84" />\n' +
-      '        <di:waypoint x="1052" y="84" />\n' +
-      '      </bpmndi:BPMNEdge>\n' +
-      '    </bpmndi:BPMNPlane>\n' +
-      '  </bpmndi:BPMNDiagram>\n' +
-      '</bpmn:definitions>\n';
-    this.viewer.importXML(xml, ()=>this.handleLoadingResult(null));
+
+    this.viewer.importXML(this.xml, ()=>this.handleLoadingResult(null));
   }
+
   handleLoadingResult(err: any) {
     if (err) {
       return console.error('Ups, error: ', err);
     }
-    var overlays = this.viewer.get('overlays');
-    overlays.add('Task_1', {
-      position: {
-        bottom: 0,
-        right: 0
-      },
-      html: '<div>1</div>'
+
+    this.overlays = this.viewer.get('overlays');
+
+    this.showTokens();
+    this.registerEvents();
+  }
+
+  showTokens(){
+    this.tokens.forEach(token => {
+      let incidentCount = Utils.getIncidentCount(token.incidents);
+      let html = '<div style="display:flex;"><div style="float:left; color:white; background-color: blue;border-radius: 15px; padding-left:5px; padding-right:5px;">'+token.instances+'</div>';
+      html = html + (incidentCount > 0 ? '<div style="float:left; color:white; background-color: red;border-radius: 15px; padding-left:5px; padding-right:5px;">'+incidentCount+'</div></div>' : '');
+
+      this.overlays.add(token.id, {
+        position: {
+          bottom: 0,
+          left: 0
+        },
+        html: html
+      });
+
+    });
+  }
+
+  showHeatmap(){
+    this.viewer.get('canvas').zoom('fit-viewport');
+
+    if(this.heatmapInstance == null){
+      var config = {
+        container: document.getElementById("heatmap"),
+        radius: 30,
+        maxOpacity: .5,
+        minOpacity: 0,
+        blur: .75
+      };
+      this.heatmapInstance = h337.create(config);
+
+    }
+    let elementRegistry = this.viewer.get('elementRegistry');
+
+    let points = [];
+    let min = 99999;
+    let max = 0;
+    this.heatmap.forEach(entry => {
+      let shape = elementRegistry.get(entry.id);
+      let value = entry.count;
+      let overlayHtml ='<div style="opacity: 0.6; width:' + shape.width+'px; height:' + shape.height + 'px;"><div style="text-align: center; vertical-align:middle; line-height: '+(shape.height-15)+'px">'+value+'</div></div>';
+      this.overlays.add(entry.id, {
+        position: {
+          top: 0,
+          left: 0
+        },
+        html: overlayHtml
+      });
+      if(value < min){
+        min = value;
+      }
+      if(value > max){
+        max = value;
+      }
+      points.push({x: shape.x + (shape.width/2), y: shape.y + (shape.height/2), value: entry.count});
     });
 
-    var eventBus = this.viewer.get('eventBus');
+    let data = {
+      max: max+1,
+      min: min-1,
+      data: points
+    };
+    this.heatmapInstance.setData(data);
+  }
 
-// you may hook into any of the following events
-    var events = [
+  removeOverlays(){
+    this.overlays.clear();
+  }
+
+  registerEvents(): any {
+    let eventBus = this.viewer.get('eventBus');
+    let events = [
       'element.hover',
       'element.out',
       'element.click',
@@ -157,16 +143,26 @@ export class ProcessViewerComponent implements OnInit {
       'element.mouseup'
     ];
 
-    events.forEach(function(event) {
-
-      eventBus.on(event, function(e) {
+    events.forEach((event) =>{
+      eventBus.on(event, e=> {
         // e.element = the model element
         // e.gfx = the graphical element
-
-        console.log(event, 'on', e.element.id);
+        // console.log(event, 'on', e.element.id);
+        if(event === 'element.click'){
+          this.elementSelected.emit(e.element.type !== 'bpmn:Task' ? null : e.element.id);
+        }
       });
     });
-
-
   }
+
+
+  private removeHeatmap() {
+    let data = {
+      max: 2,
+      min: 1,
+      data: []
+    };
+    this.heatmapInstance.setData(data);
+    this.heatmapInstance.repaint();
+     }
 }

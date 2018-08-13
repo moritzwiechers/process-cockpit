@@ -1,0 +1,11 @@
+{
+	"main": {
+		"appTitle": "Prozess Cockpit"
+	},
+	"menu": {
+		"home": "Start",
+		"processInstance": "Prozess Instanz",
+		"processes": "Prozesse",
+		"settings": "Einstellungen"
+	}
+}
