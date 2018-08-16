@@ -47,9 +47,8 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
     this.viewer = new Viewer({
       container: '#canvas',
       width: '100%',
-      height: '230px'
+      height: '530px'
     });
-
     this.viewer.importXML(this.xml, ()=>this.handleLoadingResult(null));
   }
 
@@ -82,8 +81,6 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
   }
 
   showHeatmap(){
-    this.viewer.get('canvas').zoom('fit-viewport');
-
     if(this.heatmapInstance == null){
       var config = {
         container: document.getElementById("heatmap"),
@@ -103,7 +100,7 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
     this.heatmap.forEach(entry => {
       let shape = elementRegistry.get(entry.id);
       let value = entry.count;
-      let overlayHtml ='<div style="opacity: 0.6; width:' + shape.width+'px; height:' + shape.height + 'px;"><div style="text-align: center; vertical-align:middle; line-height: '+(shape.height-15)+'px">'+value+'</div></div>';
+      let overlayHtml ='<div style="opacity: 1; width:' + shape.width+'px; height:' + shape.height + 'px;"><div style="font-weight:bold; font-size:20px; color:red; text-align: center; vertical-align:middle; line-height: '+(shape.height-15)+'px">'+value+'</div></div>';
       this.overlays.add(entry.id, {
         position: {
           top: 0,
@@ -126,6 +123,8 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
       data: points
     };
     this.heatmapInstance.setData(data);
+
+    this.scaleCanvas();
   }
 
   removeOverlays(){
@@ -155,6 +154,18 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
     });
   }
 
+
+  private scaleCanvas(){
+    let matrix = this.viewer.get('canvas').getContainer().getElementsByClassName("djs-overlay-container")[0].style.transform;
+    console.log(matrix);
+
+
+    if(matrix.trim().length>0){
+      var c=document.getElementsByClassName("heatmap-canvas")[0];
+      c.style.transform = matrix;
+      c.style.transformOrigin = '0 0';
+    }
+  }
 
   private removeHeatmap() {
     let data = {
