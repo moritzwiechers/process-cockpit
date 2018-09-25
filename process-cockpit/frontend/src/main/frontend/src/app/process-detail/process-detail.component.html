@@ -1,5 +1,13 @@
 <div style="margin-top:5px;"> <button mat-raised-button color="primary" (click)="showHeatmap()">
   <mat-icon>map</mat-icon>Heatmap
-</button></div>
+</button>
+  <mat-form-field>
+    <mat-select placeholder="Version" [(value)]="version" (selectionChange)="versionSelected($event.value)">
+      <mat-option *ngFor="let version of versions" [value]="version" >
+        {{version.version}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
 <process-viewer (elementSelected)="elementSelected($event)" [tokens]="tokens" [xml]="xml" *ngIf="xml != null && tokens != null" [heatmap] = "heatmap"></process-viewer>
 <process-instance-list [id]="id" [searchRequest]="searchRequest" ></process-instance-list>

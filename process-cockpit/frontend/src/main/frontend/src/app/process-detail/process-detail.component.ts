@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ProcessDetailService} from "./service/process-detail.service";
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'process-detail',
@@ -14,24 +15,24 @@ export class ProcessDetailComponent implements OnInit {
   private tokens: any[];
   private heatmap: any[];
   private searchRequest;
+  private versions: any[];
+  private version : number;
 
   constructor(
-    private route: ActivatedRoute, private ProcessDetailService : ProcessDetailService)
+    private route: ActivatedRoute, private ProcessDetailService : ProcessDetailService, private router: Router)
   {}
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      this.id = params.get('id');
-      this.searchRequest =  {'firstResult':0,'sortBy':'instanceId','sortOrder':'desc','processDefinitionId':this.id}
-      this.loadXMLData();
-    });
+   this.subscribeToParameterMap();
+   this.loadTokens();
+   this.loadXMLData();
+   this.loadVersions();
   }
 
   loadXMLData(){
     this.ProcessDetailService.getProcessXML(this.id)
       .subscribe((data: any) => {
-        this.xml = data.bpmn20Xml;
-        this.loadTokens();
+        this.xml = data.bpmn20Xml+ '--' + this.id;
       });
   }
 
@@ -39,6 +40,14 @@ export class ProcessDetailComponent implements OnInit {
     this.ProcessDetailService.getProcessTokens(this.id)
       .subscribe((data: any[]) => {
         this.tokens = data;
+      });
+  }
+
+  loadTokenAndXml(){
+    this.ProcessDetailService.getProcessTokens(this.id)
+      .subscribe((data: any[]) => {
+        this.tokens = data;
+        this.loadXMLData();
       });
   }
 
@@ -73,9 +82,35 @@ export class ProcessDetailComponent implements OnInit {
 
   elementSelected(elementId){
     if(elementId!=null){
-      this.searchRequest.activityIdIn = elementId;
+      this.searchRequest ={...this.searchRequest, activityIdIn: [elementId]};
     }else{
-      this.searchRequest.activityIdIn = undefined;
+      this.searchRequest ={...this.searchRequest, activityIdIn: undefined};
     }
+  }
+
+  private subscribeToParameterMap() {
+    this.route.paramMap.subscribe(params =>
+      this.setNewProcessId(params.get('id'))
+    );
+  }
+
+  private setNewProcessId(id: string) {
+    this.id = id;
+    this.searchRequest =  {'firstResult':0,'sortBy':'instanceId','sortOrder':'desc','processDefinitionId':this.id};
+    this.loadTokenAndXml();
+  }
+
+  private loadVersions() {
+    this.ProcessDetailService.getAllVersions(this.id.substr(0,this.id.indexOf(':')))
+      .subscribe((data: any[]) => {
+        this.versions = data;
+        this.version = data.find(processData => processData.id === this.id);
+        console.log(this.version);
+      });
+  }
+
+  versionSelected(selected){
+    this.setNewProcessId(selected.id);
+    this.router.navigate(['processDetail',selected.id]);
   }
 }

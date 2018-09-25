@@ -6,12 +6,13 @@ import {HttpClient} from '@angular/common/http';
   providedIn: 'root'
 })
 export class ProcessDetailService {
-
   private endpointXML : string =  'process-definition/{id}/xml';
 
   private endpointToken : string = 'process-definition/{id}/statistics?incidents=true';
 
-  private endpointActivityHistory : string = 'history/activity-instance?processDefinitionId={id}'
+  private endpointActivityHistory : string = 'history/activity-instance?processDefinitionId={id}';
+
+  private endpointAllVersions : string = 'process-definition?key={key}';
 
   constructor(private http: HttpClient, private SettingsService:SettingsService) { }
 
@@ -25,6 +26,10 @@ export class ProcessDetailService {
 
   public getActivityHistory(processDefinitionId){
     return this.http.get(this.SettingsService.getRestCallUrl(this.endpointActivityHistory.replace('{id}',processDefinitionId)));
+  }
+
+  public getAllVersions(processDefinitionKey){
+    return this.http.get(this.SettingsService.getRestCallUrl(this.endpointAllVersions.replace('{key}',processDefinitionKey)));
   }
 
 }

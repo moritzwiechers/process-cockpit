@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Viewer} from "../bpmn-js/bpmn-js"
 import {Input} from '@angular/core';
 import Utils from "../util/utils";
@@ -21,25 +21,31 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
   @Input() xml: string;
   @Input() tokens: any[];
   @Input() heatmap: any[];
-  viewer : any;
-  overlays : any;
+  viewer: any;
+  overlays: any;
   heatmapInstance: any;
-  constructor() { }
+
+  constructor() {
+  }
 
   ngOnChanges(changes: SimpleChanges) {
-    const heatmap: SimpleChange = changes.heatmap;
-    console.log('prev value: ', heatmap.previousValue);
-    console.log('got name: ', heatmap.currentValue);
-    this.heatmap = heatmap.currentValue;
-    if(this.viewer!=null){
-      if(this.heatmap == null){
-        this.removeOverlays();
-        this.removeHeatmap();
-        this.showTokens();
-      }else{
-        this.removeOverlays();
-        this.showHeatmap();
+    if (changes.heatmap != null) {
+      this.heatmap = changes.heatmap.currentValue;
+      if (this.viewer != null) {
+        if (this.heatmap == null) {
+          this.removeOverlays();
+          this.removeHeatmap();
+          this.showTokens();
+        } else {
+          this.removeOverlays();
+          this.showHeatmap();
+        }
       }
+      return;
+    }
+    if(changes.xml!=null){
+      this.xml = changes.xml.currentValue;
+      this.loadXML();
     }
   }
 
@@ -47,9 +53,14 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
     this.viewer = new Viewer({
       container: '#canvas',
       width: '100%',
-      height: '530px'
+      height: '230px'
     });
-    this.viewer.importXML(this.xml, ()=>this.handleLoadingResult(null));
+
+    this.loadXML();
+  }
+
+  private loadXML() {
+    this.viewer.importXML(this.xml, () => this.handleLoadingResult(null));
   }
 
   handleLoadingResult(err: any) {
@@ -63,11 +74,11 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
     this.registerEvents();
   }
 
-  showTokens(){
+  showTokens() {
     this.tokens.forEach(token => {
       let incidentCount = Utils.getIncidentCount(token.incidents);
-      let html = '<div style="display:flex;"><div style="float:left; color:white; background-color: blue;border-radius: 15px; padding-left:5px; padding-right:5px;">'+token.instances+'</div>';
-      html = html + (incidentCount > 0 ? '<div style="float:left; color:white; background-color: red;border-radius: 15px; padding-left:5px; padding-right:5px;">'+incidentCount+'</div></div>' : '');
+      let html = '<div style="display:flex;"><div style="float:left; color:white; background-color: blue;border-radius: 15px; padding-left:5px; padding-right:5px;">' + token.instances + '</div>';
+      html = html + (incidentCount > 0 ? '<div style="float:left; color:white; background-color: red;border-radius: 15px; padding-left:5px; padding-right:5px;">' + incidentCount + '</div></div>' : '');
 
       this.overlays.add(token.id, {
         position: {
@@ -108,18 +119,18 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
         },
         html: overlayHtml
       });
-      if(value < min){
+      if (value < min) {
         min = value;
       }
-      if(value > max){
+      if (value > max) {
         max = value;
       }
-      points.push({x: shape.x + (shape.width/2), y: shape.y + (shape.height/2), value: entry.count});
+      points.push({x: shape.x + (shape.width / 2), y: shape.y + (shape.height / 2), value: entry.count});
     });
 
     let data = {
-      max: max+1,
-      min: min-1,
+      max: max + 1,
+      min: min - 1,
       data: points
     };
     this.heatmapInstance.setData(data);
@@ -127,7 +138,7 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
     this.scaleCanvas();
   }
 
-  removeOverlays(){
+  removeOverlays() {
     this.overlays.clear();
   }
 
@@ -142,13 +153,13 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
       'element.mouseup'
     ];
 
-    events.forEach((event) =>{
-      eventBus.on(event, e=> {
+    events.forEach((event) => {
+      eventBus.on(event, e => {
         // e.element = the model element
         // e.gfx = the graphical element
         // console.log(event, 'on', e.element.id);
-        if(event === 'element.click'){
-          this.elementSelected.emit(e.element.type !== 'bpmn:Task' ? null : e.element.id);
+        if (event === 'element.click') {
+          this.elementSelected.emit(e.element.type !=='bpmn:ServiceTask' && e.element.type !== 'bpmn:Task' && e.element.type !== 'bpmn:UserTask' ? null : e.element.id);
         }
       });
     });
@@ -161,7 +172,7 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
 
 
     if(matrix.trim().length>0){
-      var c=document.getElementsByClassName("heatmap-canvas")[0];
+      var c:any=document.getElementsByClassName("heatmap-canvas")[0];
       c.style.transform = matrix;
       c.style.transformOrigin = '0 0';
     }
@@ -175,5 +186,5 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
     };
     this.heatmapInstance.setData(data);
     this.heatmapInstance.repaint();
-     }
+  }
 }

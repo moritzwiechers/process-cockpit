@@ -63,8 +63,10 @@ export class ProcessOverviewComponent implements OnInit {
     this.ProcessOverviewService.getProcessStatistics()
       .subscribe((data: any[]) => {
         this.processList  = this.processList.map(processListElement => {
-          let statistic = data.find(statisicsElement => statisicsElement.definition.id === processListElement.id);
-          return <ProcessListElement>{key:processListElement.key, id: processListElement.id, instanceCount : statistic.instances, incidentCount: Utils.getIncidentCount(statistic.incidents)};
+          let statistic = data.filter(statisicsElement => statisicsElement.definition.key === processListElement.key);
+          let instances = statistic.map(value => value.instances).reduce((x, y) => x + y,0);
+          let incidents =  statistic.map(value => value.incidents).reduce((previousValue, currentValue) => previousValue.concat(currentValue),[]);
+          return <ProcessListElement>{key:processListElement.key, id: processListElement.id, instanceCount : instances, incidentCount: Utils.getIncidentCount(incidents)};
         });
         this.dataSource = new MatTableDataSource(this.processList);
       });

@@ -28,4 +28,5 @@ public class PreventCORSRestController {
     public void corsPut(@RequestParam String restCall, @RequestBody Object requestBody){
         restTemplate.put("http://"+restCall.replace("---","?"),requestBody,Object.class);
     }
+
 }
