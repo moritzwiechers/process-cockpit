@@ -14,6 +14,10 @@ export class ProcessDetailService {
 
   private endpointAllVersions : string = 'process-definition?key={key}';
 
+  private retryJob : string =  'job/{jobId}/retries';
+
+  private allJobsWithException : string = 'job?withException=true&processDefinitionKey={processDefinitionKey}';
+
   constructor(private http: HttpClient, private SettingsService:SettingsService) { }
 
   public getProcessXML(processDefinitionId) {
@@ -32,4 +36,16 @@ export class ProcessDetailService {
     return this.http.get(this.SettingsService.getRestCallUrl(this.endpointAllVersions.replace('{key}',processDefinitionKey)));
   }
 
+
+  private retries = {"retries": 1};
+
+  retryAllProcesses(processDefinitionKey) {
+    this.http.get(this.SettingsService.getRestCallUrl(this.allJobsWithException.replace('{processDefinitionKey}',processDefinitionKey))).subscribe((data:any[]) => {
+      data.forEach(job =>{
+          this.http.put(this.SettingsService.getRestCallUrl(this.retryJob.replace('{jobId}',job.id)),this.retries).subscribe();
+        }
+      );
+      return data.length;
+    });
+  }
 }

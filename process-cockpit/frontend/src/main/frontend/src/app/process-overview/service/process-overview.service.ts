@@ -29,7 +29,6 @@ export class ProcessOverviewService {
   retryAllProcesses() {
     this.http.get(this.SettingsService.getRestCallUrl(this.allJobsWithException)).subscribe((data:any[]) => {
       data.forEach(job =>{
-          console.log(this.SettingsService.getRestCallUrl(this.retryJob.replace('{jobId}',job.id)));
           this.http.put(this.SettingsService.getRestCallUrl(this.retryJob.replace('{jobId}',job.id)),this.retries).subscribe();
         }
       );

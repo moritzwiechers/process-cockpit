@@ -685,3 +685,8 @@ svg.new-parent {
 .djs-label-hidden .djs-label {
   display: none !important;
 }
+
+#canvas.showHeatmap .djs-overlay-container{
+  pointer-events: none;
+}
+

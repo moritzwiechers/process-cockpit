@@ -36,9 +36,11 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
           this.removeOverlays();
           this.removeHeatmap();
           this.showTokens();
+          document.getElementById('canvas').className = document.getElementById('canvas').className.replace(' showHeatmap','');
         } else {
           this.removeOverlays();
           this.showHeatmap();
+          document.getElementById('canvas').className = document.getElementById('canvas').className + ' showHeatmap';
         }
       }
       return;
@@ -101,7 +103,6 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
         blur: .75
       };
       this.heatmapInstance = h337.create(config);
-
     }
     let elementRegistry = this.viewer.get('elementRegistry');
 
@@ -111,7 +112,7 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
     this.heatmap.forEach(entry => {
       let shape = elementRegistry.get(entry.id);
       let value = entry.count;
-      let overlayHtml ='<div style="opacity: 1; width:' + shape.width+'px; height:' + shape.height + 'px;"><div style="font-weight:bold; font-size:20px; color:red; text-align: center; vertical-align:middle; line-height: '+(shape.height-15)+'px">'+value+'</div></div>';
+      let overlayHtml ='<div style="opacity: 1; pointer-events:none; width:' + shape.width+'px; height:' + shape.height + 'px;"><div style="font-weight:bold; font-size:20px; color:red; text-align: center; vertical-align:middle; line-height: '+(shape.height-15)+'px">'+value+'</div></div>';
       this.overlays.add(entry.id, {
         position: {
           top: 0,
@@ -150,8 +151,9 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
       'element.click',
       'element.dblclick',
       'element.mousedown',
-      'element.mouseup'
-    ];
+      'element.mouseup',
+      'canvas.viewbox.changing',
+    'canvas.viewbox.changed'];
 
     events.forEach((event) => {
       eventBus.on(event, e => {
@@ -161,6 +163,12 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
         if (event === 'element.click') {
           this.elementSelected.emit(e.element.type !=='bpmn:ServiceTask' && e.element.type !== 'bpmn:Task' && e.element.type !== 'bpmn:UserTask' ? null : e.element.id);
         }
+        if(event === 'canvas.viewbox.changed' && this.heatmap){
+          this.showHeatmap();
+        }
+        if(event === 'canvas.viewbox.changing' && this.heatmap){
+          this.removeHeatmap();
+        }
       });
     });
   }
@@ -168,8 +176,6 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
 
   private scaleCanvas(){
     let matrix = this.viewer.get('canvas').getContainer().getElementsByClassName("djs-overlay-container")[0].style.transform;
-    console.log(matrix);
-
 
     if(matrix.trim().length>0){
       var c:any=document.getElementsByClassName("heatmap-canvas")[0];

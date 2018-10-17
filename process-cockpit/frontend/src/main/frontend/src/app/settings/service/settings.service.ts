@@ -30,6 +30,6 @@ export class SettingsService {
   }
 
   getRestCallUrl(endpoint:string) : string{
-    return this.getCORS() ? './rest/cors?restCall=' + this.getServer() + endpoint.replace('?','---') : 'http://'+this.getServer() + endpoint;
+    return this.getCORS() ? './rest/cors?restCall=' + this.getServer() + endpoint.replace('?','---').replace('&','-U-') : 'http://'+this.getServer() + endpoint;
   }
 }

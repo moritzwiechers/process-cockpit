@@ -11,6 +11,7 @@ import {Router} from '@angular/router';
 export class ProcessDetailComponent implements OnInit {
 
   private id:string;
+  private key:string;
   private xml:string;
   private tokens: any[];
   private heatmap: any[];
@@ -97,11 +98,12 @@ export class ProcessDetailComponent implements OnInit {
   private setNewProcessId(id: string) {
     this.id = id;
     this.searchRequest =  {'firstResult':0,'sortBy':'instanceId','sortOrder':'desc','processDefinitionId':this.id};
+    this.key = this.id.substr(0,this.id.indexOf(':'));
     this.loadTokenAndXml();
   }
 
   private loadVersions() {
-    this.ProcessDetailService.getAllVersions(this.id.substr(0,this.id.indexOf(':')))
+    this.ProcessDetailService.getAllVersions(this.key)
       .subscribe((data: any[]) => {
         this.versions = data;
         this.version = data.find(processData => processData.id === this.id);
@@ -112,5 +114,9 @@ export class ProcessDetailComponent implements OnInit {
   versionSelected(selected){
     this.setNewProcessId(selected.id);
     this.router.navigate(['processDetail',selected.id]);
+  }
+
+  private retryAll(){
+    this.ProcessDetailService.retryAllProcesses(this.key);
   }
 }

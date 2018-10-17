@@ -16,17 +16,17 @@ public class PreventCORSRestController {
 
     @GetMapping(path = "cors")
     public Object cors(@RequestParam String restCall){
-        return restTemplate.getForObject("http://"+restCall.replace("---","?"),Object.class);
+        return restTemplate.getForObject("http://"+restCall.replace("---","?").replace("-U-","&"),Object.class);
     }
 
     @PostMapping(path = "cors")
     public Object cors(@RequestParam String restCall, @RequestBody Object requestBody){
-        return restTemplate.postForObject("http://"+restCall.replace("---","?"),requestBody,Object.class);
+        return restTemplate.postForObject("http://"+restCall.replace("---","?").replace("-U-","&"),requestBody,Object.class);
     }
 
     @PutMapping(path = "cors")
     public void corsPut(@RequestParam String restCall, @RequestBody Object requestBody){
-        restTemplate.put("http://"+restCall.replace("---","?"),requestBody,Object.class);
+        restTemplate.put("http://"+restCall.replace("---","?").replace("-U-","&"),requestBody,Object.class);
     }
 
 }
