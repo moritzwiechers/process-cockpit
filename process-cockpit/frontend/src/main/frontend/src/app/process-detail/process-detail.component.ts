@@ -119,4 +119,8 @@ export class ProcessDetailComponent implements OnInit {
   private retryAll(){
     this.ProcessDetailService.retryAllProcesses(this.key);
   }
+
+    private deleteAll(){
+        this.ProcessDetailService.deleteAllProcesses(this.id);
+    }
 }

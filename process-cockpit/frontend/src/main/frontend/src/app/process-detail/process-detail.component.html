@@ -12,6 +12,10 @@
     <mat-icon>refresh</mat-icon>
     Alle Instanzen erneut versuchen
   </button>
+  <button mat-raised-button color="primary" (click)="deleteAll()">
+    <mat-icon>refresh</mat-icon>
+    Alle Prozesse löschen
+  </button>
 </div>
 <process-viewer (elementSelected)="elementSelected($event)" [tokens]="tokens" [xml]="xml" *ngIf="xml != null && tokens != null" [heatmap] = "heatmap"></process-viewer>
 

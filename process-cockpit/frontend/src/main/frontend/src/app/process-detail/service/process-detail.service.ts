@@ -18,6 +18,10 @@ export class ProcessDetailService {
 
   private allJobsWithException : string = 'job?withException=true&processDefinitionKey={processDefinitionKey}';
 
+  private allInstancesForProcessDefinitionId : string = 'process-instance/?processDefinitionId={id}';
+
+  private deleteProcessInstance : string = 'process-instance/{id}';
+
   constructor(private http: HttpClient, private SettingsService:SettingsService) { }
 
   public getProcessXML(processDefinitionId) {
@@ -48,4 +52,14 @@ export class ProcessDetailService {
       return data.length;
     });
   }
+
+    deleteAllProcesses(processDefinitionId) {
+        this.http.get(this.SettingsService.getRestCallUrl(this.allInstancesForProcessDefinitionId.replace('{id}',processDefinitionId))).subscribe((data:any[]) => {
+            data.forEach(instance =>{
+              this.http.delete(this.SettingsService.getRestCallUrl(this.deleteProcessInstance.replace('{id}',instance.id))).subscribe();
+                }
+            );
+            return data.length;
+        });
+    }
 }

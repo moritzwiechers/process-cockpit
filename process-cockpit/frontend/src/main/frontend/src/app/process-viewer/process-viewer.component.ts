@@ -55,7 +55,7 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
     this.viewer = new Viewer({
       container: '#canvas',
       width: '100%',
-      height: '230px'
+      height: '530px'
     });
 
     this.loadXML();
