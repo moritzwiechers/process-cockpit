@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ProcessDetailService} from "./service/process-detail.service";
 import {Router} from '@angular/router';
+import {MatDialog} from '@angular/material';
+import {ProcessMigrationDialogComponent} from "../process-migration-dialog/process-migration-dialog.component";
 
 @Component({
   selector: 'process-detail',
-  templateUrl: './process-detail.component.html',
-  styleUrls: ['./process-detail.component.css']
+  templateUrl: './process-detail.component.html'
 })
 export class ProcessDetailComponent implements OnInit {
 
@@ -19,7 +20,7 @@ export class ProcessDetailComponent implements OnInit {
   private versions: any[];
   private version : number;
 
-  constructor(
+  constructor(public dialog: MatDialog,
     private route: ActivatedRoute, private ProcessDetailService : ProcessDetailService, private router: Router)
   {}
 
@@ -118,5 +119,16 @@ export class ProcessDetailComponent implements OnInit {
 
   private retryAll(){
     this.ProcessDetailService.retryAllProcesses(this.key);
+  }
+
+  private migrateDialog(){
+      const dialogRef = this.dialog.open(ProcessMigrationDialogComponent, {
+        width: '250px',
+        data: this.key
+      });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
   }
 }
