@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProcessViewerComponent } from './process-viewer.component';
 
-describe('ProcessViewerComponent', () => {
+describe('ProcessInstanceViewerComponent', () => {
   let component: ProcessViewerComponent;
   let fixture: ComponentFixture<ProcessViewerComponent>;
 

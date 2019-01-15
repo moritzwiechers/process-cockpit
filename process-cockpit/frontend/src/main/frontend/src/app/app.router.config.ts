@@ -3,10 +3,12 @@ import { RouterModule, Routes } from '@angular/router';
 import {ProcessViewerComponent} from "./process-viewer/process-viewer.component";
 import {ProcessOverviewComponent} from "./process-overview/process-overview.component";
 import {ProcessDetailComponent} from "./process-detail/process-detail.component";
+import {ProcessInstanceDetailComponent} from "./process-instance-detail/process-instance-detail.component";
+import {HomeComponent} from "./home/home.component";
 export const routerConfig: Routes = [
   {
     path: 'home',
-    component: ProcessViewerComponent
+    component: HomeComponent
   },
   {
     path: 'processInstance',
@@ -19,6 +21,10 @@ export const routerConfig: Routes = [
   {
     path: 'processes',
     component: ProcessOverviewComponent
+  },
+  {
+    path: 'processInstanceDetail/:id',
+    component: ProcessInstanceDetailComponent
   },
   {
     path: 'settings',
