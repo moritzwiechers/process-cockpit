@@ -17,7 +17,7 @@ export class ProcessInstanceDetailService {
 
   private endpointIncidents: string = 'incident?processInstanceId={id}';
 
-  private endpointActivityHistory: string = 'history/activity-instance?processInstanceId={id}';
+  private endpointActivityHistory: string = 'history/activity-instance?processInstanceId={id}&sortBy=startTime&sortOrder=asc';
 
   private allJobsWithException: string = 'job?withException=true&processInstanceId={id}';
 
@@ -141,3 +141,25 @@ export interface ProcessInstanceIncidents {
     name?: any;
 }
 
+export interface ActivityHistory {
+  id: string;
+  parentActivityInstanceId: string;
+  activityId: string;
+  activityName: string;
+  activityType: string;
+  processDefinitionKey: string;
+  processDefinitionId: string;
+  processInstanceId: string;
+  executionId: string;
+  taskId: string;
+  calledProcessInstanceId?: any;
+  calledCaseInstanceId?: any;
+  assignee?: any;
+  startTime: Date;
+  endTime?: Date;
+  durationInMillis?: number;
+  canceled: boolean;
+  completeScope: boolean;
+  tenantId?: any;
+  occurance?:any;
+}

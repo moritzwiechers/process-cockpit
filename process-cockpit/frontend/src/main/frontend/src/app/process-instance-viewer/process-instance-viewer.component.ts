@@ -9,7 +9,10 @@ import * as h337 from 'heatmap.js';
 import {Output} from '@angular/core';
 import {EventEmitter} from '@angular/core';
 import {HostListener} from '@angular/core';
-import {ProcessInstanceDetailService} from "../process-instance-detail/service/process-instance-detail.service";
+import {
+  ActivityHistory,
+  ProcessInstanceDetailService
+} from "../process-instance-detail/service/process-instance-detail.service";
 
 @Component({
   selector: 'process-instance-viewer',
@@ -22,6 +25,7 @@ export class ProcessInstanceViewerComponent implements OnInit, OnChanges {
   @Input() xml: string;
   @Input() processInstanceId: string;
   @Input() tokens: ActivityInstanceInformation[];
+  @Input() history: ActivityHistoryInformation[];
   viewer: any;
   overlays: any;
 
@@ -40,7 +44,24 @@ export class ProcessInstanceViewerComponent implements OnInit, OnChanges {
     if(changes.tokens!=null ){
       this.tokens = changes.tokens.currentValue;
       if(this.viewer!=null && this.overlays != null){
-        this.showTokens();
+        this.removeOverlays();
+        if(this.history!=null) {
+          this.showHistory();
+        }else{
+          this.showTokens();
+        }
+      }
+    }
+    if(changes.history!=null ){
+      this.history = changes.history.currentValue;
+      if(this.viewer!=null && this.overlays != null){
+        if(this.history!=null){
+        this.removeOverlays();
+        this.showHistory();
+        }else{
+          this.removeOverlays();
+          this.showTokens();
+        }
       }
     }
   }
@@ -66,12 +87,12 @@ export class ProcessInstanceViewerComponent implements OnInit, OnChanges {
 
     this.overlays = this.viewer.get('overlays');
 
+    this.removeOverlays();
     this.showTokens();
     this.registerEvents();
   }
 
   showTokens() {
-    this.overlays.clear();
     this.tokens.forEach(token => {
       let html = '<div id="token_"'+token.id+'" style="display:flex;"><div style="float:left; color:white; background-color: blue;border-radius: 15px; padding-left:5px; padding-right:5px;">' + token.tokens.length + '</div>';
       html = html + (token.incidents.length > 0 ? '<div style="float:left; color:white; background-color: red;border-radius: 15px; padding-left:5px; padding-right:5px;">' + token.incidents.length + '</div></div>' : '');
@@ -83,7 +104,6 @@ export class ProcessInstanceViewerComponent implements OnInit, OnChanges {
         },
         html: html
       });
-
     });
   }
 
@@ -136,21 +156,47 @@ export class ProcessInstanceViewerComponent implements OnInit, OnChanges {
   @HostListener('window:custom-event', ['$event'])
   updateNodes(event) {
     if(event.detail.action === 'addTokenBefore'){
-      this.ProcessInstanceDetailService.addTokenBefore(this.processInstanceId, event.detail.activityId).subscribe();
+      this.ProcessInstanceDetailService.addTokenBefore(this.processInstanceId, event.detail.activityId).subscribe(value => this.tokensChanged.emit("tokensChanged"));
     }
     else if(event.detail.action === 'addTokenAfter'){
-      this.ProcessInstanceDetailService.addTokenAfter(this.processInstanceId, event.detail.activityId).subscribe();
+      this.ProcessInstanceDetailService.addTokenAfter(this.processInstanceId, event.detail.activityId).subscribe(value => this.tokensChanged.emit("tokensChanged"));
     }
     else if(event.detail.action === 'removeToken'){
-      this.ProcessInstanceDetailService.removeToken(this.processInstanceId, event.detail.activityId).subscribe();
+      this.ProcessInstanceDetailService.removeToken(this.processInstanceId, event.detail.activityId).subscribe(value => this.tokensChanged.emit("tokensChanged"));
     }
     if(this.contextPad!=null){
       this.overlays.remove(this.contextPad);
     }
-    this.tokensChanged.emit("tokensChanged");
+
+  }
+
+  private showHistory() {
+    this.history.forEach((history:ActivityHistoryInformation) => {
+
+      let html = '<div style="overflow: auto; max-height: 80px;">';
+      for(let i = 0; i<history.history.length;i++){
+        let text = 'Start: ' + history.history[i].startTime + "  End: " + history.history[i].endTime;
+        html+='<a href="javascript:void(0)" onclick=\'alert("'+text +'");\' title="'+history.history[i].startTime+'"><div style="float:left; color:white; background-color: grey;border-radius: 15px; padding-left:5px; padding-right:5px;">' + history.history[i].occurance + '</div></a>';
+      }
+    html+='</div>';
+
+      this.overlays.add(history.id, {
+        position: {
+          bottom: 0,
+          right: 50
+        },
+        html: html
+      });
+    });
+    this.showTokens();
   }
 }
 
+
+export interface ActivityHistoryInformation {
+  id:string,
+  history: ActivityHistory[]
+}
 export interface ActivityInstanceInformation {
   id: string;
   incidents: any[];

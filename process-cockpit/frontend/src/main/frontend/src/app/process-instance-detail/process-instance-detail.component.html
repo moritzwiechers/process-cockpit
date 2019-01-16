@@ -6,6 +6,6 @@
     <button mat-menu-item color="primary" (click)="retry()">Retry</button>
   </mat-menu>
 </div>
-<process-instance-viewer [processInstanceId]="processInstanceId" (tokensChanged)="tokensChanged($event)" [tokens]="tokens" [xml]="xml" *ngIf="xml != null && tokens != null"></process-instance-viewer>
+<process-instance-viewer [processInstanceId]="processInstanceId" (tokensChanged)="tokensChanged($event)" [history]="history" [tokens]="tokens" [xml]="xml" *ngIf="xml != null && tokens != null"></process-instance-viewer>
 
 <!--<process-instance-list [id]="processInstanceId" [searchRequest]="searchRequest" ></process-instance-list>-->
