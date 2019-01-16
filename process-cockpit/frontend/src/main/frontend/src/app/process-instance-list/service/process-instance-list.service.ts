@@ -11,7 +11,6 @@ export class ProcessInstanceListService {
   constructor(private http: HttpClient, private SettingsService:SettingsService) { }
 
   public getInstances(searchRequest : any) {
-
     return this.http.post(this.SettingsService.getRestCallUrl(this.endpointXML),searchRequest);
   }
 }

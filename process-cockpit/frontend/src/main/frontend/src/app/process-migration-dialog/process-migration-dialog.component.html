@@ -1,0 +1,25 @@
+<h1 mat-dialog-title>Name-2-Name-Migration</h1>
+<div mat-dialog-content>
+  <p>Von</p>
+  <mat-form-field>
+    <mat-select placeholder="Version" [(value)]="versionFrom">
+      <mat-option *ngFor="let version of versions" [value]="version" >
+        {{version.version}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <p>Zu</p>
+  <mat-form-field>
+    <mat-select placeholder="Version" [(value)]="versionTo">
+      <mat-option *ngFor="let version of versions" [value]="version" >
+        {{version.version}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onMigrateClick()" cdkFocusInitial>Ok</button>
+  <button mat-button [mat-dialog-close]>Cancel</button>
+</div>
