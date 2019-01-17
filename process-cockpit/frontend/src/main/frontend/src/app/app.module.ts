@@ -18,6 +18,8 @@ import { ProcessDetailComponent } from './process-detail/process-detail.componen
 import { ProcessInstanceListComponent } from './process-instance-list/process-instance-list.component';
 import { ProcessInstanceDetailComponent } from './process-instance-detail/process-instance-detail.component';
 import {ProcessMigrationDialogComponent} from "./process-migration-dialog/process-migration-dialog.component";
+import { HomeComponent } from './home/home.component';
+import {ProcessInstanceViewerComponent} from "./process-instance-viewer/process-instance-viewer.component";
 
 @NgModule({
   imports: [
@@ -38,10 +40,9 @@ import {ProcessMigrationDialogComponent} from "./process-migration-dialog/proces
     HttpClientModule,
     MaterialComponentsModule,
     ReactiveFormsModule
-
   ],
   entryComponents: [AppComponent,ProcessMigrationDialogComponent],
-  declarations: [AppComponent,ProcessMigrationDialogComponent,SettingsComponent,ProcessViewerComponent, ProcessOverviewComponent, ProcessDetailComponent, ProcessInstanceListComponent, ProcessInstanceDetailComponent],
+  declarations: [AppComponent,HomeComponent,ProcessMigrationDialogComponent,SettingsComponent,ProcessViewerComponent, ProcessInstanceViewerComponent, ProcessOverviewComponent, ProcessDetailComponent, ProcessInstanceListComponent, ProcessInstanceDetailComponent, HomeComponent],
   bootstrap: [AppComponent],
   providers: []
 })

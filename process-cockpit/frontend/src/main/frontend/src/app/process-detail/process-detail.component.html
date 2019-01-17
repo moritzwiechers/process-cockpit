@@ -1,6 +1,4 @@
-<div style="margin-top:5px;"> <button mat-raised-button color="primary" (click)="showHeatmap()">
-  <mat-icon>map</mat-icon>Heatmap
-</button>
+<div style="margin-top:5px;">
   <mat-form-field>
     <mat-select placeholder="Version" [(value)]="version" (selectionChange)="versionSelected($event.value)">
       <mat-option *ngFor="let version of versions" [value]="version" >
@@ -11,23 +9,11 @@
 
   <button mat-button [matMenuTriggerFor]="menu">Actions</button>
   <mat-menu #menu="matMenu">
-    <button mat-menu-item color="primary" (click)="showHeatmap()">
-      Heatmap
-    </button>
-    <button mat-menu-item color="primary" (click)="retryAll()">
-
-      Retry All
-    </button>
-    <button mat-menu-item color="primary" (click)="migrateDialog()">
-
-      Migration
-    </button>
-      <button mat-raised-button color="primary" (click)="deleteAll()">
-          <mat-icon>refresh</mat-icon>
-          Alle Prozesse löschen
-      </button>
+    <button mat-menu-item color="primary" (click)="showHeatmap()">Heatmap</button>
+    <button mat-menu-item color="primary" (click)="retryAll()">Retry All</button>
+    <button mat-menu-item color="primary" (click)="migrateDialog()">Migration</button>
+    <button mat-raised-button color="primary" (click)="deleteAll()">Alle Prozesse löschen</button>
   </mat-menu>
-
 
 </div>
 <process-viewer (elementSelected)="elementSelected($event)" [tokens]="tokens" [xml]="xml" *ngIf="xml != null && tokens != null" [heatmap] = "heatmap"></process-viewer>

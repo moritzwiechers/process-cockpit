@@ -1,0 +1,9 @@
+.token {
+  background-color: blue;
+  border-radius: 10px;
+}
+
+.tokenFailedJob{
+  background-color: red;
+  border-radius: 10px;
+}

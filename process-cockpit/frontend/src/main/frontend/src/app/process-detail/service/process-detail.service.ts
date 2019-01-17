@@ -51,11 +51,15 @@ export class ProcessDetailService {
   retryAllProcesses(processDefinitionKey) {
     this.http.get(this.SettingsService.getRestCallUrl(this.allJobsWithException.replace('{processDefinitionKey}', processDefinitionKey))).subscribe((data: any[]) => {
       data.forEach(job => {
-          this.http.put(this.SettingsService.getRestCallUrl(this.retryJob.replace('{jobId}', job.id)), this.retries).subscribe();
+          this.retrySingleJob(job);
         }
       );
       return data.length;
     });
+  }
+
+  public retrySingleJob(job) {
+    this.http.put(this.SettingsService.getRestCallUrl(this.retryJob.replace('{jobId}', job.id)), this.retries).subscribe();
   }
 
   migrateVersion(processDefinitionKey: any, versionFrom: any, versionTo: any) {
