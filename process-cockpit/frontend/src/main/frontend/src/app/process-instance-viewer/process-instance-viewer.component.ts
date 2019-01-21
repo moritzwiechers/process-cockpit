@@ -129,17 +129,20 @@ export class ProcessInstanceViewerComponent implements OnInit, OnChanges {
         // e.gfx = the graphical element
         // console.log(event, 'on', e.element.id);
         if (event === 'element.click') {
-          let elementId = e.element.type !=='bpmn:ServiceTask' && e.element.type !== 'bpmn:Task' && e.element.type !== 'bpmn:UserTask' ? null : e.element.id;
+          let elementId = e.element.type==='bpmn:Process' ? null : e.element.id;
           if(this.contextPad!=null){
             this.overlays.remove(this.contextPad);
           }
           if(elementId!=null){
-            let addTokenBeforeLink = '<div style=" background-color:white;height:20px; text-align: center; width:20px; border:2px dotted grey; border-radius: 10px;"><a style="text-decoration:none; color:green; font-size:20px; font-family: arial;font-weight: bold;" href="javascript:void(0)" title="Add Token Before" onclick=\'window.dispatchEvent(new CustomEvent("custom-event",{"detail":{"action":"addTokenBefore","activityId" :"'+elementId+'"}}));\'>+</a></div>';
-            let addTokenAfterLink = '<div style=" background-color:white;height:20px; text-align: center; width:20px; border:2px dotted grey; border-radius: 10px;"><a style="text-decoration:none; color:green; font-size:20px; font-family: arial;font-weight: bold;" href="javascript:void(0)" title="Add Token After" onclick=\'window.dispatchEvent(new CustomEvent("custom-event",{"detail":{"action":"addTokenAfter","activityId" :"'+elementId+'"}}));\'>+</a></div>';
-
-            let removeTokenLink = '<div style=" background-color:white;height:20px; text-align: center; width:20px; border:2px dotted grey; border-radius: 10px;"><a style="text-decoration:none; color:red; font-size:20px; font-family: arial;font-weight: bold;" href="javascript:void(0)" title="Remove Token" onclick=\'window.dispatchEvent(new CustomEvent("custom-event",{"detail":{"action":"removeToken","activityId" :"'+elementId+'"}}));\'>-</a></div>';
-            let buttons = addTokenBeforeLink + addTokenAfterLink;
-            buttons += this.tokens.filter(value => value.id==elementId).length>0 ? removeTokenLink : "";
+            let buttons ='';
+            if(e.element.type !== 'bpmn:CallActivity'){
+              let addTokenBeforeLink = '<div style=" background-color:white;height:20px; text-align: center; width:20px; border:2px dotted grey; border-radius: 10px;"><a style="text-decoration:none; color:green; font-size:20px; font-family: arial;font-weight: bold;" href="javascript:void(0)" title="Add Token Before" onclick=\'window.dispatchEvent(new CustomEvent("custom-event",{"detail":{"action":"addTokenBefore","activityId" :"'+elementId+'"}}));\'>+</a></div>';
+              let addTokenAfterLink = '<div style=" background-color:white;height:20px; text-align: center; width:20px; border:2px dotted grey; border-radius: 10px;"><a style="text-decoration:none; color:green; font-size:20px; font-family: arial;font-weight: bold;" href="javascript:void(0)" title="Add Token After" onclick=\'window.dispatchEvent(new CustomEvent("custom-event",{"detail":{"action":"addTokenAfter","activityId" :"'+elementId+'"}}));\'>+</a></div>';
+              let removeTokenLink = '<div style=" background-color:white;height:20px; text-align: center; width:20px; border:2px dotted grey; border-radius: 10px;"><a style="text-decoration:none; color:red; font-size:20px; font-family: arial;font-weight: bold;" href="javascript:void(0)" title="Remove Token" onclick=\'window.dispatchEvent(new CustomEvent("custom-event",{"detail":{"action":"removeToken","activityId" :"'+elementId+'"}}));\'>-</a></div>';
+              buttons = addTokenBeforeLink + addTokenAfterLink;
+              buttons += this.tokens.filter(value => value.id==elementId).length>0 ? removeTokenLink : "";
+            }
+            buttons+= '<div>'+elementId+'</div>';
             this.contextPad = this.overlays.add(elementId, {
               position: {
                 top: 0,
@@ -179,7 +182,7 @@ export class ProcessInstanceViewerComponent implements OnInit, OnChanges {
         html+='<a href="javascript:void(0)" onclick=\'alert("'+text +'");\' title="'+history.history[i].startTime+'"><div style="float:left; color:white; background-color: grey;border-radius: 15px; padding-left:5px; padding-right:5px;">' + history.history[i].occurance + '</div></a>';
       }
     html+='</div>';
-
+    try{
       this.overlays.add(history.id, {
         position: {
           bottom: 0,
@@ -187,6 +190,9 @@ export class ProcessInstanceViewerComponent implements OnInit, OnChanges {
         },
         html: html
       });
+    }catch (e) {
+        console.log('Missing Element: ' + history.id);
+    }
     });
     this.showTokens();
   }

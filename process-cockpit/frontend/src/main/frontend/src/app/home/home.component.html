@@ -1,3 +1,32 @@
-<p>
-  home works!
-</p>
+<div class="button-row">
+  <mat-form-field>
+    <input [(ngModel)]="key"matInput placeholder="Variablenname">
+  </mat-form-field>
+  <mat-form-field>
+    <input [(ngModel)]="value"matInput placeholder="Variablenwert">
+  </mat-form-field>
+  <button mat-raised-button color="primary" (click)="setFilter()">filter</button>
+</div>
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef> Id </th>
+    <td mat-cell *matCellDef="let element"> <a [routerLink]="['/processInstanceDetail',element.id]" routerLinkActive="active"> {{element.id}} </a></td>
+  </ng-container>
+
+  <ng-container matColumnDef="definitionId">
+    <th mat-header-cell *matHeaderCellDef> definitionId </th>
+    <td mat-cell *matCellDef="let element">
+        {{element.definitionId}}
+    </td>
+  </ng-container>
+
+  <!--  &lt;!&ndash; Symbol Column &ndash;&gt;
+    <ng-container matColumnDef="incidentCount">
+      <th mat-header-cell *matHeaderCellDef> Anzahl Fehler </th>
+      <td mat-cell *matCellDef="let element"> {{element.incidentCount}} </td>
+    </ng-container>-->
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
