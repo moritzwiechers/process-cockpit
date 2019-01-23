@@ -9,7 +9,7 @@ export class SettingsService {
   cORS : boolean;
 
   constructor() {
-    this.server = "192.168.34.74/prozesse-webapp/camunda-rest/";
+    this.server = "localhost:8090/rest/";
     this.cORS = true;
   }
 

@@ -70,7 +70,7 @@ export class ProcessInstanceViewerComponent implements OnInit, OnChanges {
     this.viewer = new Viewer({
       container: '#canvas',
       width: '100%',
-      height: '430px'
+      height: '330px'
     });
 
     this.loadXML();
