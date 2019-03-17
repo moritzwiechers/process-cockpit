@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {SettingsService} from "../../settings/service/settings.service";
 import {HttpClient} from '@angular/common/http';
 import {ProcessInstanceListService} from "../../process-instance-list/service/process-instance-list.service";
+import {Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,8 @@ export class ProcessDetailService {
 
   private endpointAllVersions: string = 'process-definition?key={key}';
 
+  private endpointLatestVersion: string = 'process-definition?key={key}&latest=true';
+
   private retryJob: string = 'job/{jobId}/retries';
 
   private allJobsWithException: string = 'job?withException=true&processDefinitionKey={processDefinitionKey}';
@@ -23,7 +26,7 @@ export class ProcessDetailService {
 
   private executeMigrationPlan: string = 'migration/execute';
 
-  constructor(private http: HttpClient, private SettingsService: SettingsService, private ProcessInstanceListService: ProcessInstanceListService) {
+  constructor(private http: HttpClient, private SettingsService: SettingsService, private ProcessInstanceListService: ProcessInstanceListService,private Router: Router) {
   }
   private allInstancesForProcessDefinitionId : string = 'process-instance/?processDefinitionId={id}';
 
@@ -43,6 +46,10 @@ export class ProcessDetailService {
 
   public getAllVersions(processDefinitionKey) {
     return this.http.get(this.SettingsService.getRestCallUrl(this.endpointAllVersions.replace('{key}', processDefinitionKey)));
+  }
+
+  public getLatestVersion(processDefinitionKey) {
+    return this.http.get(this.SettingsService.getRestCallUrl(this.endpointLatestVersion.replace('{key}', processDefinitionKey)));
   }
 
 
@@ -90,5 +97,11 @@ export class ProcessDetailService {
             );
             return data.length;
         });
+    }
+
+    openSubProcess(processDefintionKey){
+      this.getLatestVersion(processDefintionKey).subscribe(data =>{
+        this.Router.navigate(['/processDetail', data[0].id]);
+      });
     }
 }

@@ -28,12 +28,15 @@ export class ProcessInstanceDetailComponent implements OnInit {
   constructor(private route: ActivatedRoute, private ProcessDetailService : ProcessDetailService, private ProcessInstanceDetailService : ProcessInstanceDetailService) { }
 
   private subscribeToParameterMap() {
-    this.route.paramMap.subscribe(params =>
-      this.processInstanceId = params.get('id'));
+    this.route.paramMap.subscribe(params =>{
+      this.processInstanceId = params.get('id');
+      this.load();
+    });
   }
-
-  ngOnInit() {
+  ngOnInit(){
     this.subscribeToParameterMap();
+  }
+  load() {
     this.ProcessInstanceDetailService.getProcessInstance(this.processInstanceId).subscribe(value => {this.processInstance = value;
     this.loadXMLData();
     this.loadTokens();
@@ -101,5 +104,9 @@ export class ProcessInstanceDetailComponent implements OnInit {
 
   tokensChanged($event: String) {
     this.loadTokens();
+  }
+
+  onResizeEnd($event) {
+    console.log($event);
   }
 }

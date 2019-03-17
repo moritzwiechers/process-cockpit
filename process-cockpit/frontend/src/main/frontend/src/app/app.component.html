@@ -1,8 +1,9 @@
 <div class="cockpit">
-  <mat-toolbar color="primary" class="cockpit-toolbar">
+  <mat-toolbar [color]="getServer().indexOf('192.168.34.75') > -1 ? 'warn' : 'primary'" class="cockpit-toolbar">
     <button mat-icon-button (click)="snav.toggle()"><mat-icon>menu</mat-icon></button>
     <h1 class="cockpit-app-name">{{ 'main.appTitle' | translate }}</h1>
     <div style="width:100%">
+      <div style="float:left; margin-left:200px">Server: {{getServer()}}</div>
     <button matTooltip="Change language to english" mat-raised-button style="float:right;" (click)="useLanguage('en')" *ngIf="language==='de'">en</button>
     <button matTooltip="Sprache auf Deutsch ändern" mat-raised-button style="float:right;" (click)="useLanguage('de')" *ngIf="language==='en'">de</button>
     </div>

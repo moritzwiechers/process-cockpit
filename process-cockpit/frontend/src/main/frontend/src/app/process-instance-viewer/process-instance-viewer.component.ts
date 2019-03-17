@@ -1,14 +1,5 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Viewer} from "../bpmn-js/bpmn-js"
-import {Input} from '@angular/core';
-import Utils from "../util/utils";
-import {OnChanges} from '@angular/core';
-import {SimpleChanges} from '@angular/core';
-import {SimpleChange} from '@angular/core';
-import * as h337 from 'heatmap.js';
-import {Output} from '@angular/core';
-import {EventEmitter} from '@angular/core';
-import {HostListener} from '@angular/core';
 import {
   ActivityHistory,
   ProcessInstanceDetailService
@@ -135,13 +126,15 @@ export class ProcessInstanceViewerComponent implements OnInit, OnChanges {
           }
           if(elementId!=null){
             let buttons ='';
-            if(e.element.type !== 'bpmn:CallActivity'){
+
               let addTokenBeforeLink = '<div style=" background-color:white;height:20px; text-align: center; width:20px; border:2px dotted grey; border-radius: 10px;"><a style="text-decoration:none; color:green; font-size:20px; font-family: arial;font-weight: bold;" href="javascript:void(0)" title="Add Token Before" onclick=\'window.dispatchEvent(new CustomEvent("custom-event",{"detail":{"action":"addTokenBefore","activityId" :"'+elementId+'"}}));\'>+</a></div>';
               let addTokenAfterLink = '<div style=" background-color:white;height:20px; text-align: center; width:20px; border:2px dotted grey; border-radius: 10px;"><a style="text-decoration:none; color:green; font-size:20px; font-family: arial;font-weight: bold;" href="javascript:void(0)" title="Add Token After" onclick=\'window.dispatchEvent(new CustomEvent("custom-event",{"detail":{"action":"addTokenAfter","activityId" :"'+elementId+'"}}));\'>+</a></div>';
               let removeTokenLink = '<div style=" background-color:white;height:20px; text-align: center; width:20px; border:2px dotted grey; border-radius: 10px;"><a style="text-decoration:none; color:red; font-size:20px; font-family: arial;font-weight: bold;" href="javascript:void(0)" title="Remove Token" onclick=\'window.dispatchEvent(new CustomEvent("custom-event",{"detail":{"action":"removeToken","activityId" :"'+elementId+'"}}));\'>-</a></div>';
-              buttons = addTokenBeforeLink + addTokenAfterLink;
+
+              buttons += addTokenBeforeLink + addTokenAfterLink;
+
               buttons += this.tokens.filter(value => value.id==elementId).length>0 ? removeTokenLink : "";
-            }
+
             buttons+= '<div>'+elementId+'</div>';
             this.contextPad = this.overlays.add(elementId, {
               position: {
@@ -150,6 +143,11 @@ export class ProcessInstanceViewerComponent implements OnInit, OnChanges {
               },
               html: '<div style="color:black">'+buttons+'</div>'
             });
+          }
+        }else if (event === 'element.dblclick') {
+          if(e.element.type === 'bpmn:CallActivity'){
+            this.ProcessInstanceDetailService.openSubProcess(this.processInstanceId, e.element.businessObject.calledElement);
+            console.log( e.element);
           }
         }
       });
@@ -166,6 +164,10 @@ export class ProcessInstanceViewerComponent implements OnInit, OnChanges {
     }
     else if(event.detail.action === 'removeToken'){
       this.ProcessInstanceDetailService.removeToken(this.processInstanceId, event.detail.activityId).subscribe(value => this.tokensChanged.emit("tokensChanged"));
+    }
+    else if(event.detail.action === 'openSubProcess'){
+      // this.ProcessInstanceDetailService.removeToken(this.processInstanceId, event.detail.activityId).subscribe(value => this.tokensChanged.emit("tokensChanged"));
+      console.log(this.processInstanceId + ' - ' + event.detail.activityId);
     }
     if(this.contextPad!=null){
       this.overlays.remove(this.contextPad);

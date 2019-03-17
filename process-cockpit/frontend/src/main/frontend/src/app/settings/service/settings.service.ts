@@ -9,20 +9,22 @@ export class SettingsService {
   cORS : boolean;
 
   constructor() {
-    this.server = "localhost:8090/rest/";
-    this.cORS = true;
+    this.server = !localStorage.getItem("server") ? "localhost:8090/rest/" : localStorage.getItem("server");
+    this.cORS = !localStorage.getItem("cors") ? true : (localStorage.getItem("cors") == "true");
   }
 
   setServer(server:string):void{
     this.server = server;
+    localStorage.setItem('server', server);
   }
 
   getServer():string{
     return this.server;
   }
 
-  setCORS(cORS:boolean):void {
+  setCORS(cORS):void {
     this.cORS = cORS;
+    localStorage.setItem('cors', cORS);
   }
 
   getCORS():boolean {

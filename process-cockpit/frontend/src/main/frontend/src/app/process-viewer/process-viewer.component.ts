@@ -1,13 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Viewer} from "../bpmn-js/bpmn-js"
-import {Input} from '@angular/core';
 import Utils from "../util/utils";
-import {OnChanges} from '@angular/core';
-import {SimpleChanges} from '@angular/core';
-import {SimpleChange} from '@angular/core';
 import * as h337 from 'heatmap.js';
-import {Output} from '@angular/core';
-import {EventEmitter} from '@angular/core';
+import {ProcessDetailService} from "../process-detail/service/process-detail.service";
 
 @Component({
   selector: 'process-viewer',
@@ -25,7 +20,7 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
   overlays: any;
   heatmapInstance: any;
 
-  constructor() {
+  constructor(private ProcessDetailService:ProcessDetailService) {
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -162,6 +157,10 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
         // console.log(event, 'on', e.element.id);
         if (event === 'element.click') {
           this.elementSelected.emit(e.element.type !=='bpmn:ServiceTask' && e.element.type !== 'bpmn:Task' && e.element.type !== 'bpmn:UserTask' ? null : e.element.id);
+        }else if (event === 'element.dblclick') {
+          if(e.element.type === 'bpmn:CallActivity'){
+            this.ProcessDetailService.openSubProcess(e.element.businessObject.calledElement)
+          }
         }
         if(event === 'canvas.viewbox.changed' && this.heatmap){
           this.showHeatmap();

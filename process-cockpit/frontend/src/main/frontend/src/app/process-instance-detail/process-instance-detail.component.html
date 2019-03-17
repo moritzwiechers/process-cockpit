@@ -6,6 +6,10 @@
     <button mat-menu-item color="primary" (click)="retry()">Retry</button>
   </mat-menu>
 </div>
-<process-instance-viewer [processInstanceId]="processInstanceId" (tokensChanged)="tokensChanged($event)" [history]="history" [tokens]="tokens" [xml]="xml" *ngIf="xml != null && tokens != null"></process-instance-viewer>
-
+<div mwlResizable style="margin: 10px; padding:10px;"
+     [enableGhostResize]="true"
+     [resizeEdges]="{bottom: true, right: true, top: true, left: true}"
+     (resizeEnd)="onResizeEnd($event)">
+<process-instance-viewer style="margin: 10px;" [processInstanceId]="processInstanceId" (tokensChanged)="tokensChanged($event)" [history]="history" [tokens]="tokens" [xml]="xml" *ngIf="xml != null && tokens != null"></process-instance-viewer>
+</div>
 <process-instance-variable-list [id]="processInstanceId"></process-instance-variable-list>

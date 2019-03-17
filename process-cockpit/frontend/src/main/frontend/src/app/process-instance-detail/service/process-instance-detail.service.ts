@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {SettingsService} from "../../settings/service/settings.service";
 import {HttpClient} from '@angular/common/http';
-import {ProcessInstanceListService} from "../../process-instance-list/service/process-instance-list.service";
 import {ProcessDetailService} from "../../process-detail/service/process-detail.service";
+import {Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +21,9 @@ export class ProcessInstanceDetailService {
 
   private allJobsWithException: string = 'job?withException=true&processInstanceId={id}';
 
-  constructor(private http: HttpClient, private SettingsService: SettingsService, private ProcessDetailService: ProcessDetailService) {
+  private endpointSubProcessInstance: string = 'process-instance?key={key}&superProcessInstance={id}';
+
+  constructor(private http: HttpClient, private SettingsService: SettingsService, private ProcessDetailService: ProcessDetailService, private Router: Router) {
   }
 
   public getProcessInstance(processInstanceId){
@@ -93,6 +95,16 @@ export class ProcessInstanceDetailService {
       ]
     }
     return this.http.post(this.SettingsService.getRestCallUrl(this.endpointModification.replace('{id}', processInstanceId)),body);
+  }
+
+  public getSubProcess(superProcessInstanceId, processDefinitionKey) {
+    return this.http.get(this.SettingsService.getRestCallUrl(this.endpointSubProcessInstance.replace('{key}', processDefinitionKey).replace('{id}',superProcessInstanceId)));
+  }
+
+  openSubProcess(superProcessInstanceId, processDefinitionKey) {
+    this.getSubProcess(superProcessInstanceId,processDefinitionKey).subscribe(data =>{
+      this.Router.navigate(['/processInstanceDetail', data[0].id]);
+    });
   }
 }
 
