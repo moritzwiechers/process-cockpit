@@ -2,7 +2,6 @@ import {enableProdMode, NgModule} from '@angular/core';
 import {environment} from '../environments/environment';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserModule} from "@angular/platform-browser";
-import { ResizableModule } from 'angular-resizable-element';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
@@ -21,6 +20,7 @@ import {ProcessMigrationDialogComponent} from "./process-migration-dialog/proces
 import {HomeComponent} from './home/home.component';
 import {ProcessInstanceViewerComponent} from "./process-instance-viewer/process-instance-viewer.component";
 import {ProcessInstanceVariableListComponent} from "./process-instance-variable-list/process-instance-variable-list.component";
+import { AngularDraggableModule } from 'angular2-draggable';
 
 @NgModule({
   imports: [
@@ -35,7 +35,7 @@ import {ProcessInstanceVariableListComponent} from "./process-instance-variable-
         deps: [HttpClient]
       }
     }),
-    ResizableModule,
+    AngularDraggableModule,
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,

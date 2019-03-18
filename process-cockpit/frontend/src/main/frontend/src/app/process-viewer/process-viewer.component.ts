@@ -50,7 +50,7 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
     this.viewer = new Viewer({
       container: '#canvas',
       width: '100%',
-      height: '530px'
+      height: '600px'
     });
 
     this.loadXML();
@@ -156,7 +156,8 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
         // e.gfx = the graphical element
         // console.log(event, 'on', e.element.id);
         if (event === 'element.click') {
-          this.elementSelected.emit(e.element.type !=='bpmn:ServiceTask' && e.element.type !== 'bpmn:Task' && e.element.type !== 'bpmn:UserTask' ? null : e.element.id);
+          this.elementSelected.emit("bpmn:Process"==e.element.type || "bpmn:SubProcess" == e.element.type || "label" == e.element.type || "bpmn:StartEvent" == e.element.type || "bpmn:EndEvent" == e.element.type || "bpmn:SequenceFlow" == e.element.type ? null : e.element.id);
+          console.log(e.element);
         }else if (event === 'element.dblclick') {
           if(e.element.type === 'bpmn:CallActivity'){
             this.ProcessDetailService.openSubProcess(e.element.businessObject.calledElement)

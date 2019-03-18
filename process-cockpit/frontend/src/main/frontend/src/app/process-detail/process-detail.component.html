@@ -16,10 +16,12 @@
   </mat-menu>
 
 </div>
-<process-viewer (elementSelected)="elementSelected($event)" [tokens]="tokens" [xml]="xml" *ngIf="xml != null && tokens != null" [heatmap] = "heatmap"></process-viewer>
-
-<process-instance-list [id]="id" [searchRequest]="searchRequest" ></process-instance-list>
-
+<div ngResizable [rzHandles]="'s'" (rzStop)="onResizeStop($event)" (rzStart)="onResizeStart($event)">
+  <process-viewer (elementSelected)="elementSelected($event)" [tokens]="tokens" [xml]="xml" *ngIf="xml != null && tokens != null" [heatmap] = "heatmap"></process-viewer>
+</div>
+<div id="processList" style="overflow-y: scroll; margin-top:10px;">
+  <process-instance-list [id]="id" [searchRequest]="searchRequest" ></process-instance-list>
+</div>
 
 
 

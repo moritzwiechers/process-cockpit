@@ -11,6 +11,7 @@ import {
   ActivityHistoryInformation,
   ActivityInstanceInformation
 } from "../process-instance-viewer/process-instance-viewer.component";
+import {IResizeEvent} from "angular2-draggable/lib/models/resize-event";
 
 @Component({
   selector: 'app-process-instance-detail',
@@ -24,6 +25,7 @@ export class ProcessInstanceDetailComponent implements OnInit {
   public xml:string;
   public history: ActivityHistoryInformation[];
   public tokens: ActivityInstanceInformation[] =[];
+  public canvsHeight:number = 600;
 
   constructor(private route: ActivatedRoute, private ProcessDetailService : ProcessDetailService, private ProcessInstanceDetailService : ProcessInstanceDetailService) { }
 
@@ -47,6 +49,7 @@ export class ProcessInstanceDetailComponent implements OnInit {
     this.ProcessDetailService.getProcessXML(this.processInstance.definitionId)
       .subscribe((data: any) => {
         this.xml = data.bpmn20Xml+ '--' + this.processInstance.definitionId;
+        window.setTimeout(()=>this.setCanvasSize(this.canvsHeight),500);
       });
   }
 
@@ -83,12 +86,28 @@ export class ProcessInstanceDetailComponent implements OnInit {
     }, {});
   };
 
+
+  private getAllChildren(children, list){
+    children.forEach(child=>{
+      list.push(child);
+      if(child.childActivityInstances!=null && child.childActivityInstances.length >0){
+        this.getAllChildren(child.childActivityInstances,list);
+      }
+      if(child.childTransitionInstances != null && child.childTransitionInstances.length >0){
+        this.getAllChildren(child.childTransitionInstances,list);
+      }
+    });
+  }
+
   private loadTokens() {
 
     let tmpTokens = [];
     this.ProcessInstanceDetailService.getProcessTokens(this.processInstanceId).subscribe((processInstanceActivites: ActivityInstances) =>{
       this.ProcessInstanceDetailService.getIncidents(this.processInstanceId).subscribe((processInstanceIncidents:ProcessInstanceIncidents)=>{
-        let groupedTokens :any[]= this.groupBy(processInstanceActivites.childActivityInstances,"activityId");
+        let tokenList = [];
+        this.getAllChildren(processInstanceActivites.childActivityInstances,tokenList);
+        this.getAllChildren(processInstanceActivites.childTransitionInstances,tokenList);
+        let groupedTokens :any[]= this.groupBy(tokenList,"activityId");
         let groupedIncidents :any[]= this.groupBy(processInstanceIncidents,"activityId");
         for (var property in groupedTokens) {
           if (groupedTokens.hasOwnProperty(property)) {
@@ -106,7 +125,22 @@ export class ProcessInstanceDetailComponent implements OnInit {
     this.loadTokens();
   }
 
-  onResizeEnd($event) {
-    console.log($event);
+  onResizeStart($event:IResizeEvent){
+    let elementsByClassNameElement: any = document.getElementsByClassName('bjs-container')[0];
+    elementsByClassNameElement.style.display ='none';
+  }
+
+  onResizeStop($event: IResizeEvent) {
+    let elementsByClassNameElement: any = document.getElementsByClassName('bjs-container')[0];
+    elementsByClassNameElement.style.display ='block';
+    this.canvsHeight = $event.size.height;
+    this.setCanvasSize(this.canvsHeight);
+  }
+
+  private setCanvasSize(canvasHeight: number) {
+    document.getElementById("canvas").style.height = canvasHeight + 'px ';
+    let elementsByClassNameElement:any = document.getElementsByClassName('bjs-container')[0];
+    elementsByClassNameElement.style.height = canvasHeight + 'px ';
+    document.getElementById('processList').style.height= (window.innerHeight-canvasHeight-120) + 'px';
   }
 }
