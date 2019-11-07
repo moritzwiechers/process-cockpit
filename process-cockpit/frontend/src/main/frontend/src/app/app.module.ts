@@ -21,6 +21,7 @@ import {HomeComponent} from './home/home.component';
 import {ProcessInstanceViewerComponent} from "./process-instance-viewer/process-instance-viewer.component";
 import {ProcessInstanceVariableListComponent} from "./process-instance-variable-list/process-instance-variable-list.component";
 import { AngularDraggableModule } from 'angular2-draggable';
+import {HistoricComponent} from './historic/historic.component';
 
 @NgModule({
   imports: [
@@ -44,7 +45,7 @@ import { AngularDraggableModule } from 'angular2-draggable';
     ReactiveFormsModule
   ],
   entryComponents: [AppComponent,ProcessMigrationDialogComponent],
-  declarations: [AppComponent,HomeComponent,ProcessMigrationDialogComponent,SettingsComponent,ProcessViewerComponent, ProcessInstanceViewerComponent, ProcessOverviewComponent, ProcessDetailComponent, ProcessInstanceListComponent, ProcessInstanceDetailComponent, HomeComponent, ProcessInstanceVariableListComponent],
+  declarations: [AppComponent,HistoricComponent,HomeComponent,ProcessMigrationDialogComponent,SettingsComponent,ProcessViewerComponent, ProcessInstanceViewerComponent, ProcessOverviewComponent, ProcessDetailComponent, ProcessInstanceListComponent, ProcessInstanceDetailComponent, HomeComponent, ProcessInstanceVariableListComponent],
   bootstrap: [AppComponent],
   providers: []
 })

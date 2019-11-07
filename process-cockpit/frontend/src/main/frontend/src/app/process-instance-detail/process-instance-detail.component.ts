@@ -24,6 +24,7 @@ export class ProcessInstanceDetailComponent implements OnInit {
   public processInstance:any;
   public xml:string;
   public history: ActivityHistoryInformation[];
+  public historicProcess: boolean;
   public tokens: ActivityInstanceInformation[] =[];
   public canvsHeight:number = 600;
 
@@ -32,6 +33,7 @@ export class ProcessInstanceDetailComponent implements OnInit {
   private subscribeToParameterMap() {
     this.route.paramMap.subscribe(params =>{
       this.processInstanceId = params.get('id');
+        this.historicProcess = this.route.snapshot.queryParamMap.get('historic') && Boolean(this.route.snapshot.queryParamMap.get('historic'));
       this.load();
     });
   }
@@ -39,9 +41,12 @@ export class ProcessInstanceDetailComponent implements OnInit {
     this.subscribeToParameterMap();
   }
   load() {
-    this.ProcessInstanceDetailService.getProcessInstance(this.processInstanceId).subscribe(value => {this.processInstance = value;
+    this.ProcessInstanceDetailService.getProcessInstance(this.processInstanceId, this.historicProcess).subscribe(value => {this.processInstance = value;
     this.loadXMLData();
     this.loadTokens();
+        if (this.historicProcess) {
+            this.showHistory();
+        }
     });
   }
 
@@ -99,27 +104,33 @@ export class ProcessInstanceDetailComponent implements OnInit {
     });
   }
 
-  private loadTokens() {
+    private loadTokens() {
+        if (!this.historicProcess) {
+            let tmpTokens = [];
+            this.ProcessInstanceDetailService.getProcessTokens(this.processInstanceId, this.historicProcess).subscribe((processInstanceActivites: ActivityInstances) => {
+                this.ProcessInstanceDetailService.getIncidents(this.processInstanceId).subscribe((processInstanceIncidents: ProcessInstanceIncidents) => {
+                    let tokenList = [];
+                    this.getAllChildren(processInstanceActivites.childActivityInstances, tokenList);
+                    this.getAllChildren(processInstanceActivites.childTransitionInstances, tokenList);
+                    let groupedTokens: any[] = this.groupBy(tokenList, 'activityId');
+                    let groupedIncidents: any[] = this.groupBy(processInstanceIncidents, 'activityId');
+                    for (var property in groupedTokens) {
+                        if (groupedTokens.hasOwnProperty(property)) {
+                            tmpTokens.push({
+                                id: property,
+                                incidents: groupedIncidents[property] != null ? groupedIncidents[property] : [],
+                                tokens: groupedTokens[property]
+                            })
+                        }
+                    }
+                    this.tokens = tmpTokens;
+                });
 
-    let tmpTokens = [];
-    this.ProcessInstanceDetailService.getProcessTokens(this.processInstanceId).subscribe((processInstanceActivites: ActivityInstances) =>{
-      this.ProcessInstanceDetailService.getIncidents(this.processInstanceId).subscribe((processInstanceIncidents:ProcessInstanceIncidents)=>{
-        let tokenList = [];
-        this.getAllChildren(processInstanceActivites.childActivityInstances,tokenList);
-        this.getAllChildren(processInstanceActivites.childTransitionInstances,tokenList);
-        let groupedTokens :any[]= this.groupBy(tokenList,"activityId");
-        let groupedIncidents :any[]= this.groupBy(processInstanceIncidents,"activityId");
-        for (var property in groupedTokens) {
-          if (groupedTokens.hasOwnProperty(property)) {
-            tmpTokens.push({id: property,
-              incidents: groupedIncidents[property] != null ? groupedIncidents[property]:[],
-              tokens: groupedTokens[property]})
-          }
+            });
+        } else {
+            this.tokens = [];
         }
-        this.tokens = tmpTokens;
-      });
-    });
-  }
+    }
 
   tokensChanged($event: String) {
     this.loadTokens();

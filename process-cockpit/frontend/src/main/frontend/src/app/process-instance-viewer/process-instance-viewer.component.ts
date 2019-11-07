@@ -32,7 +32,7 @@ export class ProcessInstanceViewerComponent implements OnInit, OnChanges {
         this.loadXML();
       }
     }
-    if(changes.tokens!=null ){
+    if(changes.tokens!=null){
       this.tokens = changes.tokens.currentValue;
       if(this.viewer!=null && this.overlays != null){
         this.removeOverlays();
@@ -49,6 +49,7 @@ export class ProcessInstanceViewerComponent implements OnInit, OnChanges {
         if(this.history!=null){
         this.removeOverlays();
         this.showHistory();
+            console.log('HIST');
         }else{
           this.removeOverlays();
           this.showTokens();
@@ -76,16 +77,21 @@ export class ProcessInstanceViewerComponent implements OnInit, OnChanges {
       return console.error('Ups, error: ', err);
     }
 
-    this.overlays = this.viewer.get('overlays');
 
+    document.getElementsByClassName('viewport').item(0).setAttribute('transform','matrix(0.350461, 0, 0, 0.350461, -428.521, -136.228)');
+    this.overlays = this.viewer.get('overlays');
     this.removeOverlays();
-    this.showTokens();
+      if(this.history==null){
+    this.showTokens();}else{
+          this.showHistory();
+      }
     this.registerEvents();
+
   }
 
   showTokens() {
     this.tokens.forEach(token => {
-      let html = '<div id="token_"'+token.id+'" style="display:flex;"><div style="float:left; color:white; background-color: blue;border-radius: 15px; padding-left:5px; padding-right:5px;">' + token.tokens.length + '</div>';
+      let html = '<div id="token_"'+token.id+'" style="display:flex;"><div style="float:left; color:white; background-color: blue;border-radius: 15px; padding:25px;">' + token.tokens.length + '</div>';
       html = html + (token.incidents.length > 0 ? '<div style="float:left; color:white; background-color: red;border-radius: 15px; padding-left:5px; padding-right:5px;">' + token.incidents.length + '</div></div>' : '');
 
       this.overlays.add(token.id, {
@@ -127,11 +133,11 @@ export class ProcessInstanceViewerComponent implements OnInit, OnChanges {
           if(elementId!=null){
             let buttons ='';
 
-              let addTokenBeforeLink = '<div style=" background-color:white;height:20px; text-align: center; width:20px; border:2px dotted grey; border-radius: 10px;"><a style="text-decoration:none; color:green; font-size:20px; font-family: arial;font-weight: bold;" href="javascript:void(0)" title="Add Token Before" onclick=\'window.dispatchEvent(new CustomEvent("custom-event",{"detail":{"action":"addTokenBefore","activityId" :"'+elementId+'"}}));\'>+</a></div>';
-              let addTokenAfterLink = '<div style=" background-color:white;height:20px; text-align: center; width:20px; border:2px dotted grey; border-radius: 10px;"><a style="text-decoration:none; color:green; font-size:20px; font-family: arial;font-weight: bold;" href="javascript:void(0)" title="Add Token After" onclick=\'window.dispatchEvent(new CustomEvent("custom-event",{"detail":{"action":"addTokenAfter","activityId" :"'+elementId+'"}}));\'>+</a></div>';
+              let addTokenBeforeLink = '<a style="text-decoration:none; color:green; font-size:20px; font-family: arial;font-weight: bold;" href="javascript:void(0)" title="Add Token Before" onclick=\'window.dispatchEvent(new CustomEvent("custom-event",{"detail":{"action":"addTokenBefore","activityId" :"'+elementId+'"}}));\'><div style=" background-color:white;height:50px; width:50px;text-align: center; border:2px dotted grey; border-radius: 10px;">+</div></a>';
+              // let addTokenAfterLink = '<div style=" background-color:white;height:20px; text-align: center; width:20px; border:2px dotted grey; border-radius: 10px;"><a style="text-decoration:none; color:green; font-size:20px; font-family: arial;font-weight: bold;" href="javascript:void(0)" title="Add Token After" onclick=\'window.dispatchEvent(new CustomEvent("custom-event",{"detail":{"action":"addTokenAfter","activityId" :"'+elementId+'"}}));\'>+</a></div>';
               let removeTokenLink = '<div style=" background-color:white;height:20px; text-align: center; width:20px; border:2px dotted grey; border-radius: 10px;"><a style="text-decoration:none; color:red; font-size:20px; font-family: arial;font-weight: bold;" href="javascript:void(0)" title="Remove Token" onclick=\'window.dispatchEvent(new CustomEvent("custom-event",{"detail":{"action":"removeToken","activityId" :"'+elementId+'"}}));\'>-</a></div>';
 
-              buttons += addTokenBeforeLink + addTokenAfterLink;
+              buttons += addTokenBeforeLink;
 
               buttons += this.tokens.filter(value => value.id==elementId).length>0 ? removeTokenLink : "";
 

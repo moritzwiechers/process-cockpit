@@ -3,6 +3,7 @@ import {Viewer} from "../bpmn-js/bpmn-js"
 import Utils from "../util/utils";
 import * as h337 from 'heatmap.js';
 import {ProcessDetailService} from "../process-detail/service/process-detail.service";
+import doc from "@angular/cli/commands/doc";
 
 @Component({
   selector: 'process-viewer',
@@ -69,6 +70,7 @@ export class ProcessViewerComponent implements OnInit, OnChanges {
 
     this.showTokens();
     this.registerEvents();
+    document.getElementsByClassName('viewport').item(0).setAttribute('transform','matrix(0.350461, 0, 0, 0.350461, -428.521, -136.228)');
   }
 
   showTokens() {

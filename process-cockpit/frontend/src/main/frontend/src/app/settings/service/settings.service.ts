@@ -9,7 +9,7 @@ export class SettingsService {
   cORS : boolean;
 
   constructor() {
-    this.server = !localStorage.getItem("server") ? "localhost:8090/rest/" : localStorage.getItem("server");
+    this.server = !localStorage.getItem("server") ? "192.168.34.75/prozesse-webapp/camunda-rest/" : localStorage.getItem("server");
     this.cORS = !localStorage.getItem("cors") ? true : (localStorage.getItem("cors") == "true");
   }
 

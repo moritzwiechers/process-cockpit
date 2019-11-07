@@ -3,6 +3,7 @@ import {SettingsService} from "../../settings/service/settings.service";
 import {HttpClient} from '@angular/common/http';
 import {ProcessDetailService} from "../../process-detail/service/process-detail.service";
 import {Router} from '@angular/router';
+import {tap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,7 @@ export class ProcessInstanceDetailService {
   private endpointProcessInstance: string = 'process-instance/{id}';
 
   private endpointToken: string = 'process-instance/{id}/activity-instances';
+  private endpointTokenHistoric: string = 'history/activity-instance/?processInstanceId={id}';
 
   private endpointModification: string = 'process-instance/{id}/modification';
 
@@ -26,12 +28,13 @@ export class ProcessInstanceDetailService {
   constructor(private http: HttpClient, private SettingsService: SettingsService, private ProcessDetailService: ProcessDetailService, private Router: Router) {
   }
 
-  public getProcessInstance(processInstanceId){
-    return this.http.get(this.SettingsService.getRestCallUrl(this.endpointProcessInstance.replace('{id}', processInstanceId)));
+  public getProcessInstance(processInstanceId, historicProcess){
+    return this.http.get(this.SettingsService.getRestCallUrl((historicProcess ? 'history/' : '') + this.endpointProcessInstance.replace('{id}', processInstanceId))).pipe(tap((x: any) => x.definitionId = x.definitionId ? x.definitionId :x.processDefinitionId));
   }
 
-  public getProcessTokens(processInstanceId) {
-    return this.http.get(this.SettingsService.getRestCallUrl(this.endpointToken.replace('{id}', processInstanceId)));
+  public getProcessTokens(processInstanceId, historicProcess) {
+      const endpoint = historicProcess ? this.endpointTokenHistoric : this.endpointToken;
+    return this.http.get(this.SettingsService.getRestCallUrl(endpoint.replace('{id}', processInstanceId)));
   }
 
   public getActivityHistory(processDefinitionId) {
