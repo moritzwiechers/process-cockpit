@@ -1,3 +1,4 @@
+/* tslint:disable:max-line-length */
 import {Injectable} from '@angular/core';
 import {SettingsService} from "../../settings/service/settings.service";
 import {HttpClient} from '@angular/common/http';
@@ -31,6 +32,8 @@ export class ProcessDetailService {
   private allInstancesForProcessDefinitionId : string = 'process-instance/?processDefinitionId={id}';
 
   private deleteProcessInstance : string = 'process-instance/{id}';
+
+  private deleteProcessDefinition : string = 'process-definition/{id}?cascade=true&skipCustomListeners=true';
 
   public getProcessXML(processDefinitionId) {
     return this.http.get(this.SettingsService.getRestCallUrl(this.endpointXML.replace('{id}', processDefinitionId)));
@@ -97,6 +100,15 @@ export class ProcessDetailService {
             );
             return data.length;
         });
+    }
+
+    removeProcessDefinition(processDefinitionKey) {
+        this.getAllVersions(processDefinitionKey)
+            .subscribe((data: any[]) => {
+               data.forEach( dataItem =>
+                    this.http.delete(this.SettingsService.getRestCallUrl(this.deleteProcessDefinition.replace('{id}', dataItem.id))).subscribe()
+               );
+            });
     }
 
     openSubProcess(processDefintionKey){

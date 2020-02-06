@@ -22,7 +22,7 @@ export class HomeComponent implements OnInit {
 
     ngOnInit() {
         this.searchRequest =  {'firstResult':0,'sortBy':'instanceId','sortOrder':'desc'};
-        this.loadProcessInstanceList();
+        // this.loadProcessInstanceList(); Dauert lange
     }
 
     private loadProcessInstanceList() {

@@ -145,6 +145,10 @@ export class ProcessDetailComponent implements OnInit {
     this.ProcessDetailService.deleteAllProcesses(this.id);
   }
 
+  private removeDefinition() {
+    this.ProcessDetailService.removeProcessDefinition(this.key);
+  }
+
   onResizeStart($event: IResizeEvent) {
     let elementsByClassNameElement: any = document.getElementsByClassName('bjs-container')[0];
     elementsByClassNameElement.style.display = 'none';
