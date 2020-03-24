@@ -4,6 +4,7 @@ import {SettingsService} from "../../settings/service/settings.service";
 import {HttpClient} from '@angular/common/http';
 import {ProcessInstanceListService} from "../../process-instance-list/service/process-instance-list.service";
 import {Router} from '@angular/router';
+import {map} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -48,7 +49,8 @@ export class ProcessDetailService {
   }
 
   public getAllVersions(processDefinitionKey) {
-    return this.http.get(this.SettingsService.getRestCallUrl(this.endpointAllVersions.replace('{key}', processDefinitionKey)));
+    return this.http.get(this.SettingsService.getRestCallUrl(this.endpointAllVersions.replace('{key}', processDefinitionKey)))
+      .pipe(map((source: any[]) => source.sort((a, b) => (a.version > b.version) ? 1 : ((b.version > a.version) ? -1 : 0))));
   }
 
   public getLatestVersion(processDefinitionKey) {
@@ -76,7 +78,7 @@ export class ProcessDetailService {
     let request = {
       "sourceProcessDefinitionId": versionFrom,
       "targetProcessDefinitionId": versionTo,
-      "updateEventTriggers": true
+      "updateEventTriggers": false
     };
     this.http.post(this.SettingsService.getRestCallUrl(this.generateMigrationPlan), request).subscribe((migrationPlan: any) => {
       this.ProcessInstanceListService.getInstances({
